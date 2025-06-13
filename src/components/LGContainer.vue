@@ -8,7 +8,7 @@
     <svg class="LGFilter" :style="filterStyles" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter :id="`${id}-filter`" color-interpolation-filters="sRGB">
-          <feImage x="0" y="0" width="10%" height="100%" result="map" :href="filter"/>
+          <feImage x="0" y="0" width="100%" height="100%" result="map" :href="filter"/>
           <feDisplacementMap in2="map" in="SourceGraphic" yChannelSelector="B" xChannelSelector="R" :scale="finalConfig.warpDirection"/>
         </filter>
       </defs>
