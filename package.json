@@ -1,6 +1,10 @@
 {
   "name": "liquid-glass-container",
   "version": "1.0.7",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danchristofi/liquid-glass-container.git"
+  },
   "description": "Liquid glass container component for Vue",
   "main": "dist/lg-container.umd.js",
   "module": "dist/lg-container.es.js",
