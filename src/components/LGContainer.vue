@@ -1,16 +1,15 @@
 <template>
   <div class="LGContainer" :style="containerStyles">
-    <slot/>
+
+    <div :class="contentClass">
+      <slot/>
+    </div>
 
     <svg class="LGFilter" :style="filterStyles" xmlns="http://www.w3.org/2000/svg">
-      <defs style="touch-action: none;">
-        <filter :id="`${id}-filter`" color-interpolation-filters="sRGB" style="touch-action: none;">
-          <!-- the input displacement image -->
-          <feImage :x="imageSize.x" :y="imageSize.y" :width="imageSize.w" :height="imageSize.h" result="map"
-                   :href="filter"
-                   style="touch-action: none;"/>
-          <!-- the displacement map to use -->
-          <feDisplacementMap in2="map" in="SourceGraphic" yChannelSelector="B" xChannelSelector="R" scale="-180"/>
+      <defs>
+        <filter :id="`${id}-filter`" color-interpolation-filters="sRGB">
+          <feImage x="0" y="0" width="10%" height="100%" result="map" :href="filter"/>
+          <feDisplacementMap in2="map" in="SourceGraphic" yChannelSelector="B" xChannelSelector="R" :scale="finalConfig.warpDirection"/>
         </filter>
       </defs>
     </svg>
@@ -20,93 +19,73 @@
 </template>
 
 <script setup>
-import {computed, ref} from "vue";
+import {computed} from "vue";
 
 const props = defineProps({
-  id: {
+  contentClass: {
     type: String,
-    default: 'gc1',
+    default: ''
   },
-  width: {
-    type: Number,
-    default: 300,
-  },
-  height: {
-    type: Number,
-    default: 600,
-  },
-  border: {
-    type: Number,
-    default: 0.1,
-  },
-  radius: {
-    type: Number,
-    default: 50,
-  },
-  alpha: {
-    type: Number,
-    default: 0.93,
-  },
-  lightness: {
-    type: Number,
-    default: 50,
-  },
-  inputBlur: {
-    type: Number,
-    default: 20,
-  },
-  outputBlur: {
-    type: Number,
-    default: 7,
+  config: {
+    type: Object,
+    default: () => ({})
   },
 })
 
-const hoverScale = ref(1)
+const defaultConfig = {
+  width: 300,
+  height: 600,
+  radius: 50,
+  bevelWidth: 0.1,
+  bevelBlur: 7,
+  backgroundBlur: 3,
+  warpAmount: 0.07,
+  warpDistance: 50,
+  warpDirection: -180,
+}
 
-const imageSize = computed(() => {
-  return {
-    w: `${100 * hoverScale.value}%`,
-    h: `${100 * hoverScale.value}%`,
-    x: `${(100 - (100 * hoverScale.value))/ 2}%`,
-    y: `${(100 - (100 * hoverScale.value))/ 2}%`,
-  }
-})
+const finalConfig = computed(() => ({
+  ...defaultConfig,
+  ...props.config
+}))
+
+const id = `lgc-${Math.random() * 100}`
 
 const filter = computed(() => {
 
-  const borderX = Math.min(props.width, props.height) * (props.border * 0.5)
+  const borderX = Math.min(finalConfig.value.width, finalConfig.value.height) * (finalConfig.value.bevelWidth * 0.5)
 
   let svg = `
-<svg class="displacement-image" viewBox="0 0 ${props.width} ${props.height}" xmlns="http://www.w3.org/2000/svg">
+<svg class="displacement-image" viewBox="0 0 ${finalConfig.value.width} ${finalConfig.value.height}" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="${props.id}-red" x1="100%" y1="0%" x2="0%" y2="0%">
+    <linearGradient id="${id}-red" x1="100%" y1="0%" x2="0%" y2="0%">
       <stop offset="0%" stop-color="#0000"/>
       <stop offset="100%" stop-color="red"/>
     </linearGradient>
-    <linearGradient id="${props.id}-blue" x1="0%" y1="0%" x2="0%" y2="100%">
+    <linearGradient id="${id}-blue" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#0000"/>
       <stop offset="100%" stop-color="blue"/>
     </linearGradient>
   </defs>
 
     <!-- backdrop -->
-    <rect x="0" y="0" width="${props.width}" height="${props.height}" fill="black"></rect>
+    <rect x="0" y="0" width="${finalConfig.value.width}" height="${finalConfig.value.height}" fill="black"></rect>
 
     <!-- red linear -->
-    <rect x="0" y="0" width="${props.width}" height="${props.height}" rx="${props.radius}" fill="url(#${props.id}-red)" />
+    <rect x="0" y="0" width="${finalConfig.value.width}" height="${finalConfig.value.height}" rx="${finalConfig.value.radius}" fill="url(#${id}-red)" />
 
      <!-- blue linear -->
-    <rect x="0" y="0" width="${props.width}" height="${props.height}" rx="${props.radius}" fill="url(#${props.id}-blue)" style="mix-blend-mode: difference" />
+    <rect x="0" y="0" width="${finalConfig.value.width}" height="${finalConfig.value.height}" rx="${finalConfig.value.radius}" fill="url(#${id}-blue)" style="mix-blend-mode: difference" />
 
     <!-- block out distortion -->
     <rect
       x="${borderX}"
-      y="${Math.min(props.width, props.height) * (props.border * 0.5)}"
-      width="${props.width - borderX * 2}"
-      height="${props.height - borderX * 2}"
-      rx="${props.radius}"
-      fill="hsl(0 0% ${props.lightness}% / ${props.alpha}"
-      style="filter:blur(${props.inputBlur}px)" />
+      y="${Math.min(finalConfig.value.width, finalConfig.value.height) * (finalConfig.value.bevelWidth * 0.5)}"
+      width="${finalConfig.value.width - borderX * 2}"
+      height="${finalConfig.value.height - borderX * 2}"
+      rx="${finalConfig.value.radius}"
+      fill="hsl(0 0% ${finalConfig.value.warpDistance}% / ${1 - finalConfig.value.warpAmount}"
+      style="filter:blur(${finalConfig.value.bevelBlur}px)" />
 </svg>`
 
   const encoded = encodeURIComponent(svg)
@@ -117,10 +96,10 @@ const filter = computed(() => {
 
 const containerStyles = computed(() => {
   return {
-    width: `${props.width}px`,
-    height: `${props.height}px`,
-    borderRadius: `${props.radius}px`,
-    backdropFilter: `url(#${props.id}-filter) blur(${props.outputBlur * 0.1}px)`,
+    width: `${finalConfig.value.width}px`,
+    height: `${finalConfig.value.height}px`,
+    borderRadius: `${finalConfig.value.radius}px`,
+    backdropFilter: `url(#${id}-filter) blur(${finalConfig.value.backgroundBlur * 0.1}px)`,
     boxShadow: `inset 0 0 2px 1px rgba(255,255,255, 0.3), inset 0 0 10px 1px rgba(255,255,255, 0.3), 0 10px 20px rgba(0,0,0, 0.2)`,
     position: `relative`,
     overflow: `hidden`,
@@ -135,7 +114,8 @@ const filterStyles = computed(() => {
     position: 'absolute',
     top: 0,
     left: 0,
-    touchAction: 'none'
+    touchAction: 'none',
+    pointerEvents: 'none'
   }
 })
 
