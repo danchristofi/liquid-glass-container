@@ -1,6 +1,6 @@
 {
   "name": "liquid-glass-container",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Liquid glass container component for Vue",
   "main": "dist/lg-container.umd.js",
   "module": "dist/lg-container.es.js",
