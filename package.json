@@ -1,0 +1,24 @@
+{
+  "name": "liquid-glass-container",
+  "version": "1.0.6",
+  "description": "Liquid Glass Container",
+  "main": "dist/lg-container.umd.js",
+  "module": "dist/lg-container.es.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite"
+  },
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  },
+  "keywords": [
+    "vue",
+    "component",
+    "wrapper"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
