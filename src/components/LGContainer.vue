@@ -14,6 +14,8 @@
       </defs>
     </svg>
 
+    <img v-if="debug" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0;" :src="filter" alt="">
+
   </div>
 
 </template>
@@ -30,6 +32,10 @@ const props = defineProps({
     type: Object,
     default: () => ({})
   },
+  debug: {
+    type: Boolean,
+    default: false,
+  }
 })
 
 const defaultConfig = {
