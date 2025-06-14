@@ -62,7 +62,7 @@ const filter = computed(() => {
   const borderX = Math.min(finalConfig.value.width, finalConfig.value.height) * (finalConfig.value.bevelWidth * 0.5)
 
   let svg = `
-<svg class="displacement-image" viewBox="0 0 ${finalConfig.value.width} ${finalConfig.value.height}" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 ${finalConfig.value.width} ${finalConfig.value.height}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="${id}-red" x1="100%" y1="0%" x2="0%" y2="0%">
       <stop offset="0%" stop-color="#0000"/>
@@ -74,16 +74,13 @@ const filter = computed(() => {
     </linearGradient>
   </defs>
 
-    <!-- backdrop -->
     <rect x="0" y="0" width="${finalConfig.value.width}" height="${finalConfig.value.height}" fill="black"></rect>
 
-    <!-- red linear -->
     <rect x="0" y="0" width="${finalConfig.value.width}" height="${finalConfig.value.height}" rx="${finalConfig.value.radius}" fill="url(#${id}-red)" />
 
-     <!-- blue linear -->
     <rect x="0" y="0" width="${finalConfig.value.width}" height="${finalConfig.value.height}" rx="${finalConfig.value.radius}" fill="url(#${id}-blue)" style="mix-blend-mode: difference" />
 
-    <!-- block out distortion -->
+    <!-- block  distortion -->
     <rect
       x="${borderX}"
       y="${Math.min(finalConfig.value.width, finalConfig.value.height) * (finalConfig.value.bevelWidth * 0.5)}"
