@@ -29,6 +29,7 @@ const defaultConfig = {
     warpAmount: 0.07, // 0 to 1
     warpDistance: 50, // 0 to 100
     warpDirection: -180, // -180 to 180
+    caAmount: 0 // Chromatic aberration, 0 to 10
 }
 ```
 
